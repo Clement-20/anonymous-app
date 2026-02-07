@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google"; // <--- We use this safe font instead
+import { Inter } from "next/font/google";
 import "./globals.css";
 import SplashScreen from "@/components/ui/SplashScreen";
+import { ThemeProvider } from "@/lib/ThemeContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,10 +17,12 @@ export default function RootLayout({
       children: React.ReactNode;
 }>) {
       return (
-            <html lang="en">
+            <html lang="en" className="light">
                   <body className={inter.className}>
-                        <SplashScreen />
-                        {children}
+                        <ThemeProvider>
+                              <SplashScreen />
+                              {children}
+                        </ThemeProvider>
                   </body>
             </html>
       );
