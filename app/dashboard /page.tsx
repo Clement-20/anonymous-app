@@ -10,23 +10,20 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null)
   const [messages, setMessages] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [publicLink, setPublicLink] = useState('') // <--- We store the link here now
+  const [publicLink, setPublicLink] = useState('')
+  const [copied, setCopied] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
     const getData = async () => {
-      // 1. Get User
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         router.push('/login')
         return
       }
       setUser(user)
-
-      // 2. CREATE LINK SAFELY (Only happens in browser)
       setPublicLink(`${window.location.origin}/u/${user.id}`)
 
-      // 3. Get Messages
       const { data, error } = await supabase
         .from('messages')
         .select('*')
@@ -40,6 +37,30 @@ export default function Dashboard() {
     }
     getData()
   }, [router])
+
+  useEffect(() => {
+    if (!user) return
+
+    const channel = supabase
+      .channel('messages')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `recipient_id=eq.${user.id}`
+        },
+        (payload) => {
+          setMessages((prev) => [payload.new as any, ...prev])
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user])
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading secrets...</div>
 
@@ -74,10 +95,11 @@ export default function Dashboard() {
               className="w-full"
               onClick={() => {
                 navigator.clipboard.writeText(publicLink)
-                alert("Link copied!")
+                setCopied(true)
+                setTimeout(() => setCopied(false), 2000)
               }}
             >
-              Copy Link 📋
+              {copied ? "Copied!" : "Copy Link"}
             </Button>
           </CardContent>
         </Card>

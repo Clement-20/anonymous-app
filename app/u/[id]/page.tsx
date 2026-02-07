@@ -11,30 +11,42 @@ export default function PublicProfile() {
     const [message, setMessage] = useState('')
     const [loading, setLoading] = useState(false)
     const [sent, setSent] = useState(false)
+    const [error, setError] = useState('')
 
-    // Get the User ID from the URL (the [id] folder)
     const params = useParams()
     const recipientId = params.id
 
-    const handleSend = async () => {
-        if (!message) return
-        setLoading(true)
+    const MAX_LENGTH = 500
 
-        // SEND MESSAGE TO SUPABASE
-        const { error } = await supabase
+    const handleSend = async () => {
+        if (!message.trim()) {
+            setError("Message cannot be empty")
+            return
+        }
+
+        if (message.length > MAX_LENGTH) {
+            setError(`Message is too long (max ${MAX_LENGTH} characters)`)
+            return
+        }
+
+        setLoading(true)
+        setError('')
+
+        const { error: sendError } = await supabase
             .from('messages')
             .insert({
-                content: message,
+                content: message.trim(),
                 recipient_id: recipientId,
             })
 
-        if (error) {
-            alert("Error sending: " + error.message)
+        if (sendError) {
+            setError("Failed to send message. Please try again.")
+            setLoading(false)
         } else {
             setSent(true)
             setMessage('')
+            setLoading(false)
         }
-        setLoading(false)
     }
 
     if (sent) {
@@ -67,18 +79,29 @@ export default function PublicProfile() {
 
                 <Card className="border-0 shadow-2xl bg-white/10 backdrop-blur-lg">
                     <CardContent className="p-6 space-y-4">
+                        {error && (
+                            <div className="bg-red-500/20 backdrop-blur-sm p-4 rounded-lg border border-red-400/30">
+                                <p className="text-red-200 text-sm text-center">{error}</p>
+                            </div>
+                        )}
                         <Textarea
                             placeholder="Type your secret message here..."
                             className="min-h-[150px] text-lg p-4 bg-white/20 border-0 text-white placeholder:text-slate-400 focus-visible:ring-offset-0"
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
+                            maxLength={MAX_LENGTH}
                         />
+                        <div className="flex justify-between items-center">
+                            <span className="text-xs text-slate-400">
+                                {message.length} / {MAX_LENGTH}
+                            </span>
+                        </div>
                         <Button
                             className="w-full text-lg py-6 bg-white text-black hover:bg-slate-200"
                             onClick={handleSend}
-                            disabled={loading}
+                            disabled={loading || !message.trim()}
                         >
-                            {loading ? "Sending..." : "Send Anonymously 👻"}
+                            {loading ? "Sending..." : "Send Anonymously"}
                         </Button>
                     </CardContent>
                 </Card>
