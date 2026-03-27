@@ -12,11 +12,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
 
   // Send the 6-digit code
-const handleSendCode = async () => {
-  console.log("Connecting to:", process.env.NEXT_PUBLIC_SUPABASE_URL); // ADD THIS LINE
-  setLoading(true)
-  // ... rest of your code
-
   const handleSendCode = async () => {
     setLoading(true)
     const { error } = await supabase.auth.signInWithOtp({ email })
