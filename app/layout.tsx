@@ -1,6 +1,6 @@
 import "./globals.css";
 // This path looks specifically in the same folder
-import { ThemeProvider } from "./theme-provider"; 
+import { ThemeProvider } from "../app/theme-provider";
 
 export const metadata = {
   title: "Ghost Note",
