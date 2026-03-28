@@ -1,29 +1,30 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-import SplashScreen from "@/components/ui/SplashScreen";
-import { ThemeProvider } from "@/lib/ThemeContext";
+import { ThemeProvider } from "@/components/theme-provider";
 
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-      title: "Ghost Note",
-      description: "Anonymous Messaging App",
+export const metadata = {
+  title: "Ghost Note",
+  description: "Anonymous messaging for the shadows.",
 };
 
 export default function RootLayout({
-      children,
-}: Readonly<{
-      children: React.ReactNode;
-}>) {
-      return (
-            <html lang="en" className="light">
-                  <body className={inter.className}>
-                        <ThemeProvider>
-                              <SplashScreen />
-                              {children}
-                        </ThemeProvider>
-                  </body>
-            </html>
-      );
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    // suppressHydrationWarning is REQUIRED here so Next.js doesn't panic 
+    // when the server's HTML doesn't perfectly match the browser's Dark Mode HTML
+    <html lang="en" suppressHydrationWarning>
+      <body className="bg-black text-white antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
 }
