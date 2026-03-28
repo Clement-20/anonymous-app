@@ -58,10 +58,10 @@ export default function GhostNoteDashboard() {
           Your messages are encrypted and set to self-destruct.
         </p>
         <Link href="/chat">
-  <button className="mt-8 bg-purple-600 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-purple-900/20">
+         <button className="mt-8 bg-purple-600 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-purple-900/20">
     Start Secret Chat
-  </button>
-</Link>
+         </button>
+        </Link>
       </div>
     </main>
   )
