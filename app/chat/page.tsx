@@ -23,14 +23,24 @@ export default function ChatPage() {
         </div>
       </div>
 
-      <footer className="p-4 bg-zinc-900/50 backdrop-blur-lg">
-        <input 
-          className="w-full bg-zinc-800 p-3 rounded-xl outline-none"
-          placeholder="Send a ghost message..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-      </footer>
+  <footer className="p-4 bg-zinc-900/50 backdrop-blur-lg flex items-center gap-3">
+  <button className="text-zinc-400">+</button> {/* For Photos/View Once */}
+  <input 
+    className="flex-1 bg-zinc-800 p-3 rounded-2xl outline-none text-sm"
+    placeholder="Ghost Message..."
+    value={message}
+    onChange={(e) => setMessage(e.target.value)}
+  />
+    <button 
+    onClick={sendMessage}
+    className="bg-purple-600 p-3 rounded-full hover:bg-purple-500 transition"
+  >
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="white">
+      <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+    </svg>
+   </button>
+  </footer>
+
     </div>
   )
 }
