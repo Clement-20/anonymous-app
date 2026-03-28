@@ -1,50 +1,57 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import Link from "next/link"
+"use client"
 
-export default function Home() {
-        return (
-                <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-slate-50">
-                        <div className="max-w-md w-full space-y-6">
+import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabase" // Ensure this path matches your project
 
-                                {/* Title Section */}
-                                <div className="text-center space-y-2">
-                                        <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">
-                                                Ghost Note 👻
-                                        </h1>
-                                        <p className="text-slate-600 text-lg">
-                                                Send anonymous texts, voice notes, and videos to friends.
-                                        </p>
-                                </div>
+export default function GhostNoteDashboard() {
+  const [profile, setProfile] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
-                                {/* The Card */}
-                                <Card className="shadow-lg">
-                                        <CardHeader>
-                                                <CardTitle>Get Started</CardTitle>
-                                                <CardDescription>
-                                                        Create your profile link in seconds. No app download needed.
-                                                </CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="flex flex-col gap-3">
+  useEffect(() => {
+    async function getProfile() {
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single()
+        
+        setProfile(data)
+      }
+      setLoading(false)
+    }
+    getProfile()
+  }, [])
 
-                                                {/* THIS IS THE LINK THAT WAS MISSING */}
-                                                <Link href="/login" className="w-full">
-                                                        <Button className="w-full text-lg py-6">
-                                                                Create My Link
-                                                        </Button>
-                                                </Link>
+  // 🛡️ SHIELD: This stops the white screen crash
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-black">
+        <div className="text-purple-500 animate-pulse text-xl font-bold">
+          Ghost Note Loading...
+        </div>
+      </div>
+    )
+  }
 
-                                                {/* THIS IS THE LINK THAT WAS MISSING */}
-                                                <Link href="/login" className="w-full">
-                                                        <Button variant="outline" className="w-full text-lg py-6">
-                                                                I have an account
-                                                        </Button>
-                                                </Link>
+  return (
+    <main className="min-h-screen bg-black text-white p-6">
+      <header className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold text-purple-500">Ghost Note</h1>
+        {/* The ?. prevents crashing if ghost_id is missing */}
+        <span className="bg-zinc-900 px-4 py-1 rounded-full text-sm border border-zinc-800">
+          {profile?.ghost_id || "Anonymous Ghost"}
+        </span>
+      </header>
 
-                                        </CardContent>
-                                </Card>
-
-                        </div>
-                </main>
-        )
+      <section className="space-y-4">
+        <p className="text-zinc-400">Welcome to your secure ghost space.</p>
+        <div className="border border-dashed border-zinc-800 p-10 rounded-xl text-center">
+           <p className="text-zinc-600 italic">No secret chats yet...</p>
+        </div>
+      </section>
+    </main>
+  )
 }
