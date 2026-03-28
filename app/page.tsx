@@ -1,5 +1,6 @@
 "use client"
 
+import Link from 'next/link'
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 
@@ -56,9 +57,11 @@ export default function GhostNoteDashboard() {
         <p className="text-zinc-500 text-sm max-w-[250px] mx-auto">
           Your messages are encrypted and set to self-destruct.
         </p>
-        <button className="mt-8 bg-purple-600 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-purple-900/20">
-          Start Secret Chat
-        </button>
+        <Link href="/chat">
+  <button className="mt-8 bg-purple-600 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-purple-900/20">
+    Start Secret Chat
+  </button>
+</Link>
       </div>
     </main>
   )
